@@ -114,9 +114,18 @@ func NewMysqld(config *MysqldConfig) (*TestMysqld, error) {
 	// output of `mysqld --help --verbose`.
 	// `mysql_install_db` command is obsoleted MySQL 5.7.6 or later and
 	// `mysqld --initialize-insecure` should be used.
-	out, err := exec.Command(config.Mysqld, "--help", "--verbose").Output()
+	cmd := exec.Command(config.Mysqld, "--help", "--verbose")
+	if cmd.Err != nil {
+		fmt.Println(cmd.Err)
+		if !errors.Is(cmd.Err, exec.ErrDot) {
+			return
+		}
+		cmd.Err = nil
+	}
+	out, err := cmd.Output()
 	if err != nil {
-		return nil, errors.Wrap(err, `failed to execute 'mysqld --help --verbose'`)
+		return
+		// return nil, errors.Wrap(err, `failed to execute 'mysqld --help --verbose'`)
 	}
 	if !strings.Contains(string(out), "--initialize-insecure") && config.MysqlInstallDb == "" {
 		fullpath, err := exec.LookPath("mysql_install_db")
