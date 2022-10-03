@@ -117,16 +117,9 @@ func NewMysqld(config *MysqldConfig) (*TestMysqld, error) {
 	cmd := exec.Command(config.Mysqld, "--help", "--verbose")
 	if cmd.Err != nil {
 		fmt.Println(cmd.Err)
-		if !errors.Is(cmd.Err, exec.ErrDot) {
-			return
-		}
 		cmd.Err = nil
 	}
-	out, err := cmd.Output()
-	if err != nil {
-		return
-		// return nil, errors.Wrap(err, `failed to execute 'mysqld --help --verbose'`)
-	}
+	out, _ := cmd.Output()
 	if !strings.Contains(string(out), "--initialize-insecure") && config.MysqlInstallDb == "" {
 		fullpath, err := exec.LookPath("mysql_install_db")
 		if err != nil {
