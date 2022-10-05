@@ -114,31 +114,31 @@ func NewMysqld(config *MysqldConfig) (*TestMysqld, error) {
 	// output of `mysqld --help --verbose`.
 	// `mysql_install_db` command is obsoleted MySQL 5.7.6 or later and
 	// `mysqld --initialize-insecure` should be used.
-	cmd := exec.Command(config.Mysqld, "--initialize-insecure")
-	if cmd.Err != nil {
-		fmt.Println(cmd.Err)
-		if !errors.Is(cmd.Err, exec.ErrDot) {
-			return nil, errors.Wrap(err, `failed to execute 'exec command'`)
-		}
-		cmd.Err = nil
-	}
+	// cmd := exec.Command(config.Mysqld, "--initialize-insecure")
+	// if cmd.Err != nil {
+	// 	fmt.Println(cmd.Err)
+	// 	if !errors.Is(cmd.Err, exec.ErrDot) {
+	// 		return nil, errors.Wrap(err, `failed to execute 'exec command'`)
+	// 	}
+	// 	cmd.Err = nil
+	// }
 	// if errors.Is(cmd.Err, exec.ErrDot) {
 	// 	cmd.Err = nil
 	// }
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		return nil, errors.Wrap(err, `failed to execute 'mysqld --help --verbose'`)
-	}
+	// out, err := cmd.CombinedOutput()
 	// if err != nil {
 	// 	return nil, errors.Wrap(err, `failed to execute 'mysqld --help --verbose'`)
 	// }
-	if !strings.Contains(string(out), "--initialize-insecure") && config.MysqlInstallDb == "" {
-		fullpath, err := exec.LookPath("mysql_install_db")
-		if err != nil {
-			return nil, errors.Wrap(err, `could not find mysql_install_db in path`)
-		}
-		config.MysqlInstallDb = fullpath
+	// if err != nil {
+	// 	return nil, errors.Wrap(err, `failed to execute 'mysqld --help --verbose'`)
+	// }
+	// if !strings.Contains(string(out), "--initialize-insecure") && config.MysqlInstallDb == "" {
+	fullpath, err := exec.LookPath("mysql_install_db")
+	if err != nil {
+		return nil, errors.Wrap(err, `could not find mysql_install_db in path`)
 	}
+	config.MysqlInstallDb = fullpath
+	// }
 
 	mysqld := &TestMysqld{
 		config,
